@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="tl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Kumpisal — Para sa Aking Crush</title>
+  <style>
+    :root{--bg:#fff6f8;--card:#fff;--accent:#ff6b81;--muted:#6b6b6b}
+    *{box-sizing:border-box}
+    body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#fff6f8,#fff0f3);font-family:Inter,system-ui,Segoe UI,Roboto,Helvetica,Arial}
+    .card{width:min(720px,96vw);background:var(--card);border-radius:16px;padding:28px;box-shadow:0 12px 40px rgba(255,107,129,0.12);text-align:center}
+    h1{margin:0 0 8px;font-size:1.6rem;color:#3a0f17}
+    p.lead{margin:0 0 18px;color:var(--muted)}
+    .heart{font-size:56px;line-height:1;margin:10px 0;color:var(--accent);transform:scale(0.98);transition:transform .25s ease}
+    .reveal{background:linear-gradient(90deg,#ffdde1,#ffd1dc);border-radius:12px;padding:18px;margin:12px auto;max-width:640px;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,0.6)}
+    .confession{font-size:1.05rem;color:#4a2028;display:none}
+    .controls{display:flex;gap:8px;justify-content:center;margin-top:18px}
+    button{border:0;background:var(--accent);color:white;padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer}
+    .btn-ghost{background:transparent;border:1px solid rgba(58,15,23,0.08);color:#3a0f17}
+    .note{color:var(--muted);font-size:0.9rem;margin-top:12px}
+    footer{margin-top:16px;font-size:0.85rem;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <div class="card" role="main">
+    <h1>Kumpisal</h1>
+    <div class="heart">❤️</div>
+    <p class="lead">Pindutin ang kulay rosas na card para makita ang mensahe. Gamitin ang mga button para kopyahin o i-print ang kumpisal.</p>
+
+    <div class="reveal" id="reveal" tabindex="0" role="button" aria-pressed="false">
+      <div class="confession" id="confessionText">
+        Hi — Matagal ko nang gustong sabihin ito sa’yo. Sa tuwing nag-uusap tayo, gumagaan ang araw ko. Gusto ko ang tawa mo, ang paraan mo ng pag-aalaga sa maliliit na bagay, at ang pakiramdam na parang ang dali-dali lang kapag kasama kita. Hindi ko alam kung ano ang mangyayari sa hinaharap, pero gusto kong malaman mo: may crush ako sa’yo. Kung pareho tayo ng nararamdaman, mas gusto kitang makilala pa. Kung hindi, sana napangiti ka pa rin.<br><br>
+        — Isang taong laging nag-iisip sa’yo
+      </div>
+      <div class="muted" id="coverText">Pindutin para makita ang iyong kumpisal</div>
+    </div>
+
+    <div class="controls">
+      <button id="copyBtn">Kopyahin</button>
+      <button id="printBtn" class="btn-ghost">I-print</button>
+      <button id="editBtn" class="btn-ghost">Baguhin ang mensahe</button>
+    </div>
+
+    <div class="note" id="note">Tip: Pwede mong i-personalize ang mensahe sa pamamagitan ng pag-click sa “Baguhin ang mensahe.” Gawin itong tapat at mabait.</div>
+
+    <footer>Ginawa gamit ang kaunting tapang 💌</footer>
+  </div>
+
+  <script>
+    const reveal = document.getElementById('reveal');
+    const confession = document.getElementById('confessionText');
+    const coverText = document.getElementById('coverText');
+    const copyBtn = document.getElementById('copyBtn');
+    const printBtn = document.getElementById('printBtn');
+    const editBtn = document.getElementById('editBtn');
+
+    let shown = false;
+    reveal.addEventListener('click', ()=> toggleReveal());
+    reveal.addEventListener('keydown', (e)=>{ if(e.key === 'Enter' || e.key === ' ') toggleReveal(); });
+
+    function toggleReveal(){
+      shown = !shown;
+      if(shown){ confession.style.display = 'block'; coverText.style.display = 'none'; reveal.classList.add('opened'); reveal.setAttribute('aria-pressed','true'); }
+      else { confession.style.display = 'none'; coverText.style.display = 'block'; reveal.setAttribute('aria-pressed','false'); }
+    }
+
+    copyBtn.addEventListener('click', async ()=>{
+      const text = confession.innerText.trim();
+      try{
+        await navigator.clipboard.writeText(text);
+        copyBtn.textContent = 'Nakopya ✓';
+        setTimeout(()=> copyBtn.textContent = 'Kopyahin', 1800);
+      }catch(e){
+        const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+        copyBtn.textContent = 'Nakopya ✓'; setTimeout(()=> copyBtn.textContent = 'Kopyahin', 1800);
+      }
+    });
+
+    printBtn.addEventListener('click', ()=>{ window.print(); });
+
+    editBtn.addEventListener('click', ()=>{
+      const newText = prompt('Baguhin ang iyong kumpisal:', confession.innerText);
+      if(newText !== null){ confession.innerHTML = newText.replace(/\n/g,'<br>'); shown = true; confession.style.display = 'block'; coverText.style.display='none'; }
+    });
+
+    confession.style.display = 'none';
+  </script>
+</body>
+</html>
